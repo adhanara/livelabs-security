@@ -1,21 +1,21 @@
 # Oracle Database Security Assessment Tool (DBSAT)
 
 ## Introduction
-As AI accelerates vulnerability discovery and exploitation, maintaining a secure database environment requires continuous assessment. IT administrators, DBAs, and security professionals need timely visibility into configuration risks, compliance with standards such as DISA STIG and CIS Benchmarks, and exposure to missing security patches.
-Oracle Database Security Assessment Tool (DBSAT) helps organizations proactively assess their database security posture, identify configuration weaknesses, and verify that databases are protected with the latest security updates.
+As AI accelerates vulnerability discovery and exploitation, maintaining a secure database environment requires continuous assessment. IT administrators, DBAs, and security professionals need timely visibility into configuration risks and cryptographic weakness, compliance with standards such as DISA STIG and CIS Benchmarks, and exposure to missing security patches.
+Oracle Database Security Assessment Tool (DBSAT) helps organizations proactively assess their database security and cryptographic posture, identify configuration weaknesses, and verify that databases are protected with the latest security updates.
 
-Through hands-on exercises, you will learn how to use DBSAT to assess database security posture by identifying configuration risks, reviewing user privileges, discovering sensitive data, and validating compliance with Oracle security best practices and industry standards.
+Through hands-on exercises, you will learn how to use DBSAT to assess database security and cryptographic posture by identifying configuration risks, reviewing user privileges, discovering sensitive data, and validating compliance with Oracle security best practices and industry standards.
 
 
 *Estimated lab time:* 60 minutes
 
-*Version tested in this lab:* Oracle DBSAT 4.3 and Oracle AI Database 26ai.
+*Version tested in this lab:* Oracle DBSAT 26.1 and Oracle AI Database 26ai.
 
 ### Video Preview
 Watch a preview of "*LiveLabs - Oracle Database Security Assessment Tool (DBSAT)*" [](youtube:3XxA1qhNDpQ)
 
 ### Objectives
-In this lab, you will learn how to use Oracle Database Security Assessment Tool (DBSAT) to assess the security posture of an Oracle Database. You will identify configuration weaknesses, review user privileges, discover sensitive data, and gain actionable insights to strengthen database security and support compliance.
+In this lab, you will learn how to use Oracle Database Security Assessment Tool (DBSAT) to assess the security and cryptographic posture of an Oracle Database. You will identify configuration and cryptographic weaknesses, review user privileges, discover sensitive data, and gain actionable insights to strengthen database security and support compliance.
 
 ### Prerequisites
 This lab assumes you have:
@@ -70,16 +70,14 @@ This lab assumes you have:
 4. Create a directory to install DBSAT.
 
     ````
-    <copy>mkdir dbsat40</copy>
+    <copy>mkdir dbsat26</copy>
     ````
 
 5. Unzip the DBSAT zip file.
 
     ````
-    <copy>unzip /u01/app/sources/dbsat.zip -d dbsat40</copy>
+    <copy>unzip /u01/app/sources/dbsat.zip -d dbsat26</copy>
     ````
-
-    ![DBSAT](./images/dbsat-001.png "Unzip the DBSAT zip file")
 
     **Note**:
     - For this lab, the DBSAT zip file has already been downloaded to the DBSec-Lab VM in the folder **/u01/app/sources.**
@@ -90,7 +88,7 @@ This lab assumes you have:
 1. Go to the dbsat directory just created.
 
     ````
-    <copy>cd dbsat40</copy>
+    <copy>cd dbsat26</copy>
     ````
 
 2. Start by reviewing all DBSAT command-line parameters.
@@ -400,7 +398,7 @@ In this exercise, you will learn how to use the DBSAT Discoverer. The DBSAT Disc
 1. Navigate to the `conf` directory.
 
     ````
-    <copy>cd $DBSEC_LABS/dbsat/dbsat40/Discover/conf</copy>
+    <copy>cd $DBSEC_LABS/dbsat/dbsat26/Discover/conf</copy>
     ````
 
 2. Copy the provided `sample_dbsat.config`, make the copy writable and open it for editing
@@ -572,6 +570,146 @@ Take a few minutes to scroll through the HTML report. Use the navigation arrows 
 
    In summary, DBSAT’s ability to detect sensitive types in different categories empowers you to manage sensitive data responsibly, lower risk, and help address legal and business requirements.
 
+## Task 8: Assess Cryptographic Posture
+
+Cryptographic protection behaves like a depreciating asset: an algorithm or protocol that once met expectations can become inadequate as cryptanalysis advances, computing power grows, and standards change. The cryptographic protections in the Oracle Database are spread across data at rest, network protocols, certificates, wallets, keys, backups, and exports, each with its own algorithms, key sizes, and lifecycle. Cryptographic Posture Assessment provides an inventory of cryptographic configurations and help identify weaknesses, including potential exposure to harvest now, decrypt later attacks.
+
+
+1. Go to the dbsat directory just created.
+
+    ````
+    <copy>cd $DBSEC_LABS/dbsat/dbsat26</copy>
+    ````
+2. Navigate to the `conf` directory.
+
+    ````
+    <copy>cd /CryptoPostureAssessment/conf</copy>
+    ````
+
+3. Copy the provided `sample_dbsat.config`, make the copy writable and open it for editing
+
+    ````
+    <copy>cp sample_dbsat.config dbsat.config
+    chmod +w dbsat.config
+    vi dbsat.config</copy>
+    ````
+
+    - The configuration file contains comments that explain the purpose of each parameter.
+    - In summary, the **dbsat.config** file allows you to configure:
+        - Database connection details
+        - SSL parameters
+        - Discovery parameters
+        - Sensitive categories and associated risk levels
+
+4. Change the following parameter to:
+    ````
+    DB_SERVICE_NAME = freepdb1
+    DB_PORT = 1522
+    ````
+    ![DBSAT](./images/dbsat-019.png "Change DB_SERVICE_NAME parameter")
+
+    **Note:**  
+    When using **vi**, press **i** to enter insert mode or **r** to replace text. After editing, save and exit by typing `:wq!` and pressing **Enter**.
+
+5. Save the file and return to the shell.
+
+6. Return to the terminal and change directory to the DBSAT home:
+    ````
+    <copy>cd ../..</copy>
+    ````
+7. Execute the DBSAT Discoverer:
+    ````
+    <copy>./dbsat assesscrypto -c $DBSEC_LABS/dbsat/dbsat26/CryptoPostureAssessment/conf/dbsat.config 26dbcrypto --loglevel ALL --logfile 26.log</copy>
+    ````
+8. When prompted, enter `DBSAT_ADMIN` as the username and `Oracle123` as the password.
+    ````
+    <copy>DBSAT_ADMIN</copy>
+    ````
+
+    ````
+    <copy>Oracle123</copy>
+    ````
+
+       Use `Oracle123` as the encryption key as well.
+    ````
+    <copy>Oracle123</copy>
+    ````
+
+    ![DBSAT](./images/dbsat-cr1.png "DBSAT - Crypto")
+
+    An encrypted file archive named `26dbcrypto.dbsat` will be created in the current directory.
+
+
+9. Unpack the file to view the reports. 
+
+    ````
+    <copy>./dbsat extract 26dbcrypto</copy>
+    ````
+    When prompted for the encryption key use `Oracle123`.
+
+    ````
+    <copy>Oracle123</copy>
+    ````
+10. As we are not using a desktop environment in this lab, copy the html file to the glassfish server directory by executing the script. This will make the html report accessible in the glassfish application server and make it reacheable by your laptop browser
+
+    ````
+    <copy>. ../dbsat_use_glassfish_webserver.sh</copy>
+    ````
+
+    ![DBSAT](./images/dbsat-cr2.png "Set Glassfish app")
+
+    **Note**: This script will copy the html report to the glassfish webserver to make it easier for you to see the report
+
+11. On a new web browser tab, **copy-paste the URL provided** for the "**v2**" discoverer html report (**`26dbcrypto.html`**) as the output with your DBSecLab Public IP, or use the link below where *`dbsec-lab`* is **your own DBSecLab domain name for your Private IP address**
+
+    ````
+    <copy>http://dbsec-lab:8080/hr_prod_pdb1/dbsat/26dbcrypto.html</copy>
+    ````
+
+     **Note:**
+    - You should see the **Oracle Database Cryptographic Assessment Report** report as shown below:
+
+      ![DBSAT](./images/dbsat-cr3.png "Database Crypto Assessment report")
+    
+    - In real-life scenarios, you do not need to copy the file to GlassFish; simply unzip the files and open the HTML report directly in your browser.
+
+
+## Task 9: Analyze Cryptographic Posture Report
+
+In this exercise, you will learn how to analyze the Cryptographic Posture Assessment Report. We'll explore the different sections of the report.
+
+Take a few minutes to scroll through the HTML report. Use the navigation arrows at the bottom right to move between sections.
+
+
+1. Let’s begin by reviewing **Security Features Used**. 
+   
+      ![DBSAT](./images/dbsat-cr4.png "Database Crypto Assessment -Security Features Used")
+
+    - If the status is not ENABLED, you might want to review the encryption requirement and consider implementing encrypting data at rest and in-transit.
+ 
+    **Best Practices:**
+    - Consider encrypting data at rest and in-transit
+    
+2. Let’s have a look at the **Post-Quantum Cryptography (PQC) readiness**
+
+    ![DBSAT](./images/dbsat-cr5.png "Database Crypto Assessment -PQC Readiness")
+
+    - DBSAT Crypto Posture Assessment has identified that your database instance is not PQC ready though you are running on a **QUANTUM_CAPABLE** release. Review the remarks, and configure the database to become PQC ready.
+
+    **Best Practices:**
+    - Being PQC ready helps you stay ahead of **harvest now, decrypt later (HNDL)** threats, where attackers intercept and copy encrypted data (network and storage) for later use. 
+
+3. Let's now look into one of the detailed finding **TDE status**
+
+  ![DBSAT](./images/dbsat-cr6.png "Database Crypto Assessment -TDE Status")
+
+    - DBSAT Crypto Posture Assessment has identified that in your database instance, TDE keystore is not configured. This is required for encrypting data at rest (Transparent Data Encryption). 
+    - Refer to the **Details** to know how this configuration parameter is used.
+    - Refer to the **Evaluation** to review the remediation guidance 
+
+    **Best Practices:**
+    -  TDE is used to encrypt data stored in the database, such as tablespaces, columns, and backups. Consider encrypting data at rest to protect your sensitive data.
+
 ## Congratulations!
 
     You’ve completed the DBSAT lab! 🎉
@@ -583,7 +721,7 @@ Take a few minutes to scroll through the HTML report. Use the navigation arrows 
 
 > **Note:** If you want to continue exploring DBSAT and deepen your skills, you can proceed to the advanced labs for more in-depth scenarios and features. What’s ahead? You’ll learn about advanced Discoverer capabilities such as discovery parameters, pattern files, sensitive types, categories, and DBSAT sample utilities.
 
-## Task 8: Advanced Discoverer - Getting into dbsat.config Discovery parameters
+## Task 10: Advanced Discoverer - Getting into dbsat.config Discovery parameters
 In this exercise, you will learn how **dbsat.config** parameters determine the behavior of DBSAT Discoverer:
 
 - Use the `EXCLUDE_LIST_FILE` parameter to exclude specific columns from the report.
@@ -757,7 +895,7 @@ In this exercise, you will learn how **dbsat.config** parameters determine the b
 
     ![DBSAT](./images/dbsat-037.png "DBSAT report")
 
-## Task 9: Advanced Discoverer - Prepare sample data
+## Task 11: Advanced Discoverer - Prepare sample data
 
 1. Let's start by adding some sample data for the next exercise. You’ll create the `FINACME` schema and insert sample **Company Financial Information**.
 
@@ -851,7 +989,7 @@ In this exercise, you will learn how **dbsat.config** parameters determine the b
 
 8. You are all set now!
 
-## Task 10: Advanced Discoverer - Exploring Pattern files, Sensitive Types, and Categories
+## Task 12: Advanced Discoverer - Exploring Pattern files, Sensitive Types, and Categories
 
 DBSAT uses pattern files and the defined regular expressions within them to identify sensitive data.
 
@@ -1044,6 +1182,8 @@ DBSAT uses pattern files and the defined regular expressions within them to iden
 
      ![DBSAT](./images/dbsat-053.png "Sensitive Column Details section")
 
+
+
 ## End of Lab
 
 Congratulations on completing the DBSAT lab! You’ve gained valuable hands-on experience with Oracle Database Security Assessment Tool—from assessing security risks and interpreting report findings, to working with advanced parameters and sensitive data discovery. Your efforts help strengthen your database security and compliance posture. 
@@ -1053,10 +1193,10 @@ Thank you for your participation, and keep building on these skills to further e
 
 ## Want to Learn More?
 Documentation:
-- [Oracle DBSAT 4.0 documentation](https://docs.oracle.com/en/database/oracle/security-assessment-tool/)
+- [Oracle DBSAT 26.1 documentation](https://docs.oracle.com/en/database/oracle/security-assessment-tool/)
 
 
 ## Acknowledgements
-- **Author** - Pedro Lopes, Oracle Database Security PM
-- **Contributors** - Pedro Lopes
-- **Last Updated By/Date** - Pedro Lopes, Database Security PM - July 2025
+- **Author** - Angeline Dhanarani, Oracle Database Security PM
+- **Contributors** - Pedro Lopes, Vasishtha Kumar
+- **Last Updated By/Date** - Angeline Dhanarani, Vasishtha Kumar, Database Security PM - Nov 2026
