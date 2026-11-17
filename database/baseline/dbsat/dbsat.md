@@ -231,14 +231,14 @@ Each finding includes:
 
 - **Remarks:** Further explains the risk and suggests remediation steps.
 
-- **References:** If the executed check is an **Oracle Recommended Practice (ORP)**, relates to Oracle Database 19c STIG V1R1, CIS Oracle Database Benchmark 19c v1.2.0, or relates to a GDPR article or recital, it will be mentioned here.
+- **References:** If the executed check is an **Oracle Recommended Practice (ORP)**, relates to Oracle Database 19c STIG V1R5, CIS Oracle Database 26ai Benchmark (v1.0.0), or relates to a GDPR article or recital, it will be mentioned here.
 
-- **Documentation:** For Oracle Database version 19c or 23ai, DBSAT provides documentation links related to each finding's remarks and parameters.
+- **Documentation:** For Oracle Database version 19c or 26ai, DBSAT provides documentation links related to each finding's remarks and parameters.
 
     >**What is an Oracle Recommended Practice?**<br>
-    Oracle Database Security Assessment Tool (DBSAT) has long captured decades of Oracle’s security expertise, identifying configuration issues that could pose unnecessary risk. Historically, DBSAT annotated its findings with references to security frameworks such as DISA STIGs, Center for Internet Security (CIS) benchmarks, and EU GDPR. However, these checks did not previously indicate whether a check reflected an Oracle-specific recommended practice. With the release of DBSAT 3.1, this has changed: findings that correspond to Oracle recommended practices are now clearly marked.<br><br>
+    Oracle Database Security Assessment Tool (DBSAT) has long captured decades of Oracle’s security expertise, identifying configuration issues that could pose unnecessary risk. Historically, DBSAT annotated its findings with references to security frameworks such as DISA STIGs, Center for Internet Security (CIS) benchmarks, and EU GDPR. However, these checks did not previously indicate whether a check reflected an Oracle-specific recommended practice. Now, the findings that correspond to Oracle recommended practices are now clearly marked.<br><br>
     **What makes a check an Oracle Recommended Practice (ORP)?**<br>
-    **Unique or recent features:** Some checks are labeled as Oracle best practices because they address new or unique Oracle Database features not yet reflected in external security frameworks. For example, the Gradual Password Rollover capability, introduced in Oracle Database 19c (2021), is recommended by Oracle but is not yet integrated into standards like STIG or CIS.<br>
+    **Unique or recent features:** Some checks are labeled as Oracle best practices because they address new or unique Oracle Database features not yet reflected in external security frameworks. <br>
     **Deeper product knowledge:** Oracle’s intimate knowledge of its own product surfaces potential risks that outside frameworks may not yet capture. An illustration of this is the handling of legacy password verifiers—they may remain for compatibility, but Oracle’s internal perspective recognizes the associated security implications.<br>
     **Comprehensive tagging:** Certain security findings span multiple frameworks. When this is the case, DBSAT maps findings to every relevant category. For instance, both CIS and STIG recommend avoiding default passwords for database user accounts. Now, these findings are also explicitly mapped as Oracle Best Practices (OBP). <br><br>
     **Why Aren't All ORPs in other frameworks?**<br>
@@ -575,7 +575,7 @@ Take a few minutes to scroll through the HTML report. Use the navigation arrows 
 Cryptographic protection behaves like a depreciating asset: an algorithm or protocol that once met expectations can become inadequate as cryptanalysis advances, computing power grows, and standards change. The cryptographic protections in the Oracle Database are spread across data at rest, network protocols, certificates, wallets, keys, backups, and exports, each with its own algorithms, key sizes, and lifecycle. Cryptographic Posture Assessment provides an inventory of cryptographic configurations and help identify weaknesses, including potential exposure to harvest now, decrypt later attacks.
 
 
-1. Go to the dbsat directory just created.
+1. Go to the dbsat directory.
 
     ````
     <copy>cd $DBSEC_LABS/dbsat/dbsat26</copy>
@@ -583,7 +583,7 @@ Cryptographic protection behaves like a depreciating asset: an algorithm or prot
 2. Navigate to the `conf` directory.
 
     ````
-    <copy>cd /CryptoPostureAssessment/conf</copy>
+    <copy>cd CryptoPostureAssessment/conf</copy>
     ````
 
 3. Copy the provided `sample_dbsat.config`, make the copy writable and open it for editing
@@ -598,8 +598,6 @@ Cryptographic protection behaves like a depreciating asset: an algorithm or prot
     - In summary, the **dbsat.config** file allows you to configure:
         - Database connection details
         - SSL parameters
-        - Discovery parameters
-        - Sensitive categories and associated risk levels
 
 4. Change the following parameter to:
     ````
@@ -621,6 +619,9 @@ Cryptographic protection behaves like a depreciating asset: an algorithm or prot
     ````
     <copy>./dbsat assesscrypto -c $DBSEC_LABS/dbsat/dbsat26/CryptoPostureAssessment/conf/dbsat.config 26dbcrypto --loglevel ALL --logfile 26.log</copy>
     ````
+     **Note:** 
+     The output of the command will be stored in a file called **26dbcrypto.dbsat**.
+
 8. When prompted, enter `DBSAT_ADMIN` as the username and `Oracle123` as the password.
     ````
     <copy>DBSAT_ADMIN</copy>
@@ -660,7 +661,7 @@ Cryptographic protection behaves like a depreciating asset: an algorithm or prot
 
     **Note**: This script will copy the html report to the glassfish webserver to make it easier for you to see the report
 
-11. On a new web browser tab, **copy-paste the URL provided** for the "**v2**" discoverer html report (**`26dbcrypto.html`**) as the output with your DBSecLab Public IP, or use the link below where *`dbsec-lab`* is **your own DBSecLab domain name for your Private IP address**
+11. On a new web browser tab, **copy-paste the URL provided** for the html report (**`26dbcrypto.html`**) as the output with your DBSecLab Public IP, or use the link below where *`dbsec-lab`* is **your own DBSecLab domain name for your Private IP address**
 
     ````
     <copy>http://dbsec-lab:8080/hr_prod_pdb1/dbsat/26dbcrypto.html</copy>
@@ -699,7 +700,7 @@ Take a few minutes to scroll through the HTML report. Use the navigation arrows 
     **Best Practices:**
     - Being PQC ready helps you stay ahead of **harvest now, decrypt later (HNDL)** threats, where attackers intercept and copy encrypted data (network and storage) for later use. 
 
-3. Let's now look into one of the detailed finding **TDE status**
+3. Let's now look into one of the detailed finding: **TDE status**
 
   ![DBSAT](./images/dbsat-cr6.png "Database Crypto Assessment -TDE Status")
 
